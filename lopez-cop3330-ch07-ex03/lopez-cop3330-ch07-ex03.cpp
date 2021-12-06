@@ -3,6 +3,8 @@
  *  Copyright 2021 Sabrina Lopez
  */
 
+  //this exercise solution builds on the last exercise solution
+
 #include <iostream>
 #include "std_lib_facilities.h"
 using namespace std;
@@ -14,17 +16,23 @@ const char number = '8';
 const char name = 'a';
 const char sqroot = 's';
 //const char power = 'p';
+const char revalue = '=';
+const char constant = 'c';
 
 const string let_key = "let";
 const string quit_key = "exit";
 const string sqrt_key = "sqrt";
 //const string pow_key = "pow";
+const string revalue_key = "=";
+const string const_key = "const";
 
 class Token {
   public:
     char kind;
+
   double value;
   string name;
+
   Token(char ch): kind(ch), value(0) {}
   Token(char ch, double val): kind(ch), value(val) {}
   Token(char ch, string name): kind(ch), name(name) {}
@@ -90,12 +98,14 @@ Token Token_stream::get() {
     if (isalpha(ch)) {
       string s;
       s += ch;
-      while (cin.get(ch) && (isalpha(ch) || isdigit(ch))) s += ch;
+      while (cin.get(ch) && ((isalpha(ch)) || (isdigit(ch)) || (ch == '_'))) s += ch;
       cin.putback(ch);
-      //if (s == pow_key) return Token(power);
-      if (s == sqrt_key) return Token(sqroot);
       if (s == let_key) return Token(let);
       if (s == quit_key) return Token(quit);
+      if (s == sqrt_key) return Token(sqroot);
+      //if (s == pow_key) return Token(power);
+      if (s == revalue_key) return Token(revalue);
+      if (s == const_key) return Token(constant);
       return Token(name, s);
     }
 
@@ -122,13 +132,16 @@ class Variable {
 
   string name;
   double value;
+
+  bool is_const;
+	Variable(string n, double v, bool b) :name(n), value(v), is_const(b) { }
 };
 
 vector < Variable > names;
 
 double get_value(string s) {
 
-  for (const Variable & v: names)
+  for ( Variable & v: names)
     if (v.name == s) return v.value;
   error("get: undefined name ", s);
 }
@@ -145,7 +158,7 @@ void set_value(string s, double d) {
 
 bool is_declared(string s) {
 
-  for (const Variable & v: names)
+  for (Variable & v: names)
     if (v.name == s) return true;
   return false;
 }
@@ -187,7 +200,7 @@ double square_root() {
     t = ts.get();
     if (t.kind != ',') error(" ',' was expected. Enter ';' to continue");
 
-    double d2 = expression();
+    int d2 = expression();
 
     t = ts.get();
     if (t.kind != ')') error(" ')' was expected. Enter ';' to continue");
@@ -304,27 +317,29 @@ double expression() {
   }
 }
 
-double declaration() {
+double declaration(char kind, bool constBool) {
 
-  Token t {
-    ts.get()
-  };
-  if (t.kind != 'a') error("name expected in declaration");
+  Token t = ts.get();
+  if (t.kind != name) error("name expected in declaration");
 
-  string name {
-    t.name
-  };
-  if (is_declared(name)) error(name, " declared twice");
+  string name = t.name;
 
-  Token t2 {
-    ts.get()
-  };
+  if(kind == constant) {
+    if (is_declared(name)) error(name, " declared twice");
+  }
+  else if(kind == revalue) {
+    if (!is_declared(name)) error(name, " has not been declared");
+  }
+  else if(kind != let) {
+    error("unknown statement");
+  }
+
+  Token t2 = ts.get();
   if (t2.kind != '=') error("= missing in declaration of ", name);
 
-  double d {
-    expression()
-  };
-  names.push_back(Variable(name, d));
+  double d = expression();
+
+  names.push_back(Variable(name, d, constBool));
 
   return d;
 }
@@ -336,7 +351,11 @@ double statement() {
   };
   switch (t.kind) {
   case let:
-    return declaration();
+    return declaration(let, false);
+  case revalue:
+    return declaration(revalue, false);
+  case constant:
+    return declaration(constant, true);
 
   default:
     ts.putback(t);

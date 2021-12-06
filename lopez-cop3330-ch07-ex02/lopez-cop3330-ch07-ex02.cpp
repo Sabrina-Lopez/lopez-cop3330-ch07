@@ -3,6 +3,8 @@
  *  Copyright 2021 Sabrina Lopez
  */
 
+ //this exercise solution builds on the last exercise solution
+
 #include <iostream>
 #include "std_lib_facilities.h"
 using namespace std;
@@ -14,11 +16,13 @@ const char number = '8';
 const char name = 'a';
 const char sqroot = 's';
 //const char power = 'p';
+const char revalue = '=';
 
 const string let_key = "let";
 const string quit_key = "exit";
 const string sqrt_key = "sqrt";
 //const string pow_key = "pow";
+const string revalue_key = "=";
 
 class Token {
   public:
@@ -90,12 +94,13 @@ Token Token_stream::get() {
     if (isalpha(ch)) {
       string s;
       s += ch;
-      while (cin.get(ch) && (isalpha(ch) || isdigit(ch))) s += ch;
+      while (cin.get(ch) && ((isalpha(ch)) || (isdigit(ch)) || (ch == '_'))) s += ch;
       cin.putback(ch);
-      //if (s == pow_key) return Token(power);
-      if (s == sqrt_key) return Token(sqroot);
       if (s == let_key) return Token(let);
       if (s == quit_key) return Token(quit);
+      if (s == sqrt_key) return Token(sqroot);
+      //if (s == pow_key) return Token(power);
+      if (s == revalue_key) return Token(revalue);
       return Token(name, s);
     }
 
@@ -128,7 +133,7 @@ vector < Variable > names;
 
 double get_value(string s) {
 
-  for (const Variable & v: names)
+  for (Variable & v: names)
     if (v.name == s) return v.value;
   error("get: undefined name ", s);
 }
@@ -145,7 +150,7 @@ void set_value(string s, double d) {
 
 bool is_declared(string s) {
 
-  for (const Variable & v: names)
+  for (Variable & v: names)
     if (v.name == s) return true;
   return false;
 }
@@ -304,17 +309,21 @@ double expression() {
   }
 }
 
-double declaration() {
+double declaration(char kind) {
 
   Token t {
     ts.get()
   };
   if (t.kind != 'a') error("name expected in declaration");
 
-  string name {
-    t.name
-  };
-  if (is_declared(name)) error(name, " declared twice");
+  string name = t.name;
+
+  if(kind == revalue) {
+    if (!is_declared(name)) error(name, " has not been declared");
+  }
+  else if(kind != let) {
+    error("unknown statement");
+  }
 
   Token t2 {
     ts.get()
@@ -336,7 +345,9 @@ double statement() {
   };
   switch (t.kind) {
   case let:
-    return declaration();
+    return declaration(let);
+  case revalue:
+    return declaration(revalue);
 
   default:
     ts.putback(t);

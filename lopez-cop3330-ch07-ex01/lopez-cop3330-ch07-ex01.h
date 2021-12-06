@@ -87,7 +87,7 @@ Token Token_stream::get() {
     return Token(number, val);
   }
   default:
-    if ((isalpha(ch)) || (ch == '_')) {
+    if (isalpha(ch)) {
       string s;
       s += ch;
       while (cin.get(ch) && ((isalpha(ch)) || (isdigit(ch)) || (ch == '_'))) s += ch;
