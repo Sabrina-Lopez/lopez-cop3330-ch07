@@ -3,8 +3,6 @@
  *  Copyright 2021 Sabrina Lopez
  */
 
-  //this exercise solution builds on the last exercise solution
-
 #include <iostream>
 #include "std_lib_facilities.h"
 using namespace std;
@@ -141,7 +139,7 @@ vector < Variable > names;
 
 double get_value(string s) {
 
-  for ( Variable & v: names)
+  for (Variable & v: names)
     if (v.name == s) return v.value;
   error("get: undefined name ", s);
 }

@@ -14,11 +14,13 @@ const char number = '8';
 const char name = 'a';
 const char sqroot = 's';
 //const char power = 'p';
+const char constant = 'c';
 
 const string let_key = "let";
 const string quit_key = "exit";
 const string sqrt_key = "sqrt";
 //const string pow_key = "pow";
+const string const_key = "const";
 
 class Token {
   public:
@@ -96,6 +98,7 @@ Token Token_stream::get() {
       if (s == quit_key) return Token(quit);
       if (s == sqrt_key) return Token(sqroot);
       //if (s == pow_key) return Token(power);
+      if (s == const_key) return Token(constant);
       return Token(name, s);
     }
 
