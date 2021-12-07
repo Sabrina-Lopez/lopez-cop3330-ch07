@@ -3,8 +3,6 @@
  *  Copyright 2021 Sabrina Lopez
  */
 
- //this exercise solution builds on the last exercise solution
-
 #include <iostream>
 #include "std_lib_facilities.h"
 using namespace std;
@@ -16,13 +14,11 @@ const char number = '8';
 const char name = 'a';
 const char sqroot = 's';
 //const char power = 'p';
-const char revalue = '=';
 
 const string let_key = "let";
 const string quit_key = "exit";
 const string sqrt_key = "sqrt";
 //const string pow_key = "pow";
-const string revalue_key = "=";
 
 class Token {
   public:
@@ -91,7 +87,7 @@ Token Token_stream::get() {
     return Token(number, val);
   }
   default:
-    if (isalpha(ch)) {
+    if ((isalpha(ch)) || (ch == '_')) {
       string s;
       s += ch;
       while (cin.get(ch) && ((isalpha(ch)) || (isdigit(ch)) || (ch == '_'))) s += ch;
@@ -100,7 +96,6 @@ Token Token_stream::get() {
       if (s == quit_key) return Token(quit);
       if (s == sqrt_key) return Token(sqroot);
       //if (s == pow_key) return Token(power);
-      if (s == revalue_key) return Token(revalue);
       return Token(name, s);
     }
 
@@ -309,7 +304,7 @@ double expression() {
   }
 }
 
-double declaration(char kind) {
+double declaration() {
 
   Token t {
     ts.get()
@@ -318,11 +313,22 @@ double declaration(char kind) {
 
   string name = t.name;
 
-  if(kind == revalue) {
-    if (!is_declared(name)) error(name, " has not been declared");
-  }
-  else if(kind != let) {
-    error("unknown statement");
+  if (is_declared(name)) {
+      cout << name + ", declared twice. Do you want to equate this variable to a new value (y/n)? > ";
+      cin.clear();
+      cin.ignore(10000, '\n');
+      string newValueBool;
+      getline(cin, newValueBool);
+
+      if (newValueBool == "n") error(name, ", won't be equated to a new value; ");
+      if (newValueBool == "y") {
+           cout << "Please enter new value = ";
+           int newVal;
+           cin >> newVal;
+           set_value(name, newVal);
+           double d = newVal;
+           return d;
+      }
   }
 
   Token t2 {
@@ -345,9 +351,7 @@ double statement() {
   };
   switch (t.kind) {
   case let:
-    return declaration(let);
-  case revalue:
-    return declaration(revalue);
+    return declaration();
 
   default:
     ts.putback(t);

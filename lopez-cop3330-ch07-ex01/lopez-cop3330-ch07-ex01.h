@@ -87,7 +87,7 @@ Token Token_stream::get() {
     return Token(number, val);
   }
   default:
-    if (isalpha(ch)) {
+    if ((isalpha(ch)) || (ch == '_')) {
       string s;
       s += ch;
       while (cin.get(ch) && ((isalpha(ch)) || (isdigit(ch)) || (ch == '_'))) s += ch;
@@ -128,7 +128,7 @@ vector < Variable > names;
 
 double get_value(string s) {
 
-  for (const Variable & v: names)
+  for (Variable & v: names)
     if (v.name == s) return v.value;
   error("get: undefined name ", s);
 }
@@ -145,7 +145,7 @@ void set_value(string s, double d) {
 
 bool is_declared(string s) {
 
-  for (const Variable & v: names)
+  for (Variable & v: names)
     if (v.name == s) return true;
   return false;
 }
