@@ -25,15 +25,15 @@ Additional User's Guide for ex02:
 
     When you enter a new variable, the variable can contain underscores (i.e., "_").
     
-    You can set a new value for a variable and use them in calculations. Put "= ", the variable that you want to change the value of, "=", and then the new numerical value
-    you want to set the variable equal to.
+    You can set a new value for a variable and use them in calculations. Put "let ", the variable that you want to change the value of, "=", and then the new numerical value
+    you want to set the variable equal to. Follow the program's printed output, and then the variable will be equated to a new value.
 
 Additional User's Guide for ex03:
 
     When you enter a new variable, the variable can contain underscores (i.e., "_").
     
     You can set a new value for a variable and use them in calculations. Put "= ", the variable that you want to change the value of, "=", and then the new numerical value
-    you want to set the variable equal to.
+    you want to set the variable equal to. 
     
     You can set a variable as constant and use them in calculations. Put "const ", the variable that you want to become constant, "=", and then the numerical value
     you want to set the variable equal to.
